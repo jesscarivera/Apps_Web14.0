@@ -6,7 +6,7 @@ _id: Types.ObjectId;
 username:string;
 password:string;
 email:string;
-role:string;
+role:string[];
 phone:string;
 status:boolean;
 createDate:Date;
@@ -33,9 +33,10 @@ const userSchema= new Schema<IUser>({
         required:true,
         unique:true
     },
-    role:{
-        type:String,
-        required:true
+    role: {
+  type: [String],
+  enum: ["admin", "cliente", "empleado"],
+  default: ["cliente"]
     },
     phone:{
         type:String,

@@ -6,6 +6,8 @@ import { time } from "console";
 import  dayjs  from "dayjs";
 import { User } from "../models/User";
 import bcrypt from 'bcryptjs';
+import { Product } from "../models/Product";
+import { Orders } from "../models/Orders";
 
 //Endpoint, recibe un request, responde un response 
 export const login =  async (req:Request,res:Response) =>{
@@ -176,7 +178,7 @@ export const encryptPassword = async (req: Request, res: Response) => {
   }
 
   try {
-    
+    const encryptedPassword = await bcrypt.hash(password, 10); // 🔐 Aquí encriptamos
     return res.json({ 
       success: true,
       encryptedPassword 
@@ -205,3 +207,4 @@ export const deleteUser=async(req:Request, res:Response) => {
 
   return res.json({message: "Eliminacion exitosa"});
 }
+

@@ -1,37 +1,71 @@
-import { Date, model, Schema, Types } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
 
-export interface IOrders extends Document{
-    id:Types.ObjectId;
-    createDate:Date;
-    userCreate:Types.ObjectId
-    entire:number;
-    subtotal:number;
-    status:boolean;
-    updateDate:Date;
+interface IOrderProduct {
+  productId: Types.ObjectId;
+  quantity: number;
+  price: number;
 }
 
-const ordersSchema = new Schema<IOrders>({
-  createDate:{
-    Type:Date,
-    default:Date.now
-  },
-   updateDate:{
-    Type:Date,
-    default:Date.now
-  }, 
-  entire:{
-    Type:Number,
-    required:true
-  },
-  subtotal:{
-    Type:Number,
-    required:true    
-  },
-  status:{
-    type:Boolean,
-    default:true,   
+export interface IOrders extends Document {
+  id: Types.ObjectId;
+  createDate: Date;
+  updateDate: Date;
+  userCreate: Types.ObjectId;
+  entire: number;
+  subtotal: number;
+  status: string;
+  products: IOrderProduct[];  
+}
 
+const orderProductSchema = new Schema<IOrderProduct>({
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+}, { _id: false });
+
+const ordersSchema = new Schema<IOrders>({
+  createDate: {
+    type: Date,
+    default: Date.now
+  },
+  updateDate: {
+    type: Date,
+    default: Date.now
+  },
+  userCreate: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  entire: {
+    type: Number,
+    required: true
+  },
+  subtotal: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    default: 'pendiente'
+  },
+  products: {
+    type: [orderProductSchema],
+    required: true,
+    validate: [(array: any[]) => array.length > 0, 'Debe contener al menos un producto']
   }
 });
 
-export const Orders = model<IOrders>('Order',ordersSchema);
+export const Orders = model<IOrders>('Order', ordersSchema);
